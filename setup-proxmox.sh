@@ -1,4 +1,5 @@
 #!/bin/bash
+# rodar esse script após a instalaćão do proxmox.
 
 set -e
 
