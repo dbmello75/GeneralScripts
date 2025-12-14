@@ -50,9 +50,23 @@ echo "📂 Pastas incluídas no backup:"
 printf '  - %s\n' "${DIRS[@]}"
 echo ""
 
-echo "💡 Comando de backup gerado:"
-echo "proxmox-backup-client backup${SPEC} --backup-id \"${username}-${hostname}\" --all-file-systems true"
+#echo "💡 Comando de backup gerado:"
+#echo "proxmox-backup-client backup${SPEC} --backup-id \"${username}-${hostname}\" --all-file-systems true"
 
 # Execute backup
-proxmox-backup-client backup ${SPEC} --backup-id "${username}-${hostname}" --all-file-systems true
+# Executa o backup e captura a saída
+BACKUP_OUTPUT=$(proxmox-backup-client backup ${SPEC} --backup-id "${username}-${hostname}" --all-file-systems true 2>&1)
+
+#echo "🔍 Dump da saída do backup:"
+#echo "$BACKUP_OUTPUT"
+
+# Extrai snapshot ID da linha 'Starting backup: ...'
+SNAPSHOT=$(echo "$BACKUP_OUTPUT" | grep -oE 'host/[^ ]+')
+
+if [ -n "$SNAPSHOT" ]; then
+  echo "📝 Adicionando comentário ao snapshot: $SNAPSHOT"
+  proxmox-backup-client snapshot notes update "$SNAPSHOT" "${username}@${hostname}"
+else
+  echo "⚠️ Snapshot não identificado na saída do backup"
+fi
 

@@ -1,62 +1,62 @@
 # 🔐 Proxmox Backup Client Script
 
-Script shell seguro e modular para realizar backups de múltiplas pastas locais no **Proxmox Backup Server (PBS)** usando o `proxmox-backup-client`.
+A secure and modular shell script to perform local multi-folder backups to **Proxmox Backup Server (PBS)** using the `proxmox-backup-client`.
 
 ---
 
-## 📌 Visão Geral
+## 📌 Overview
 
-Este script:
+This script:
 
-* Lê variáveis de configuração a partir de `~/.config/pbs.conf`
-* Faz backup de várias pastas do usuário em uma única execução
-* Gera nomes amigáveis para os arquivos `.pxar`
-* Usa `--backup-id` no padrão `<usuário>-<hostname>` para facilitar organização no PBS
-* Exibe o comando antes de executar
-* Ignora pastas inexistentes automaticamente
+* Loads configuration variables from `~/.config/pbs.conf`
+* Backs up multiple user folders in a single command
+* Generates friendly `.pxar` archive names
+* Uses `--backup-id` in the `<user>-<hostname>` format for easy PBS identification
+* Prints the full backup command before execution
+* Ignores any invalid or non-existent folders automatically
 
 ---
 
-## 🛠️ Requisitos
+## 🛠️ Requirements
 
-* **Linux (Debian preferencial)**
-* [`proxmox-backup-client`](https://pbs.proxmox.com/docs/backup-client.html) instalado:
+* **Linux** (Debian recommended)
+* [`proxmox-backup-client`](https://pbs.proxmox.com/docs/backup-client.html) installed:
 
   ```bash
   sudo apt install proxmox-backup-client
   ```
-* Acesso ao seu servidor **Proxmox Backup Server**
-* Chave API e senha de acesso válidas
+* Access to a **Proxmox Backup Server**
+* Valid API key and password credentials
 
 ---
 
-## ⚙️ Configuração
+## ⚙️ Configuration
 
-### 1. Criar o arquivo de configuração: `~/.config/pbs.conf`
+### 1. Create the config file: `~/.config/pbs.conf`
 
-Este script usa um arquivo de configuração simples baseado em variáveis de ambiente. Crie o diretório (caso não exista) e o arquivo:
+This script uses a simple environment-style config file. Create the directory and file:
 
 ```bash
 mkdir -p ~/.config
 nano ~/.config/pbs.conf
 ```
 
-### 2. Exemplo completo de `~/.config/pbs.conf`:
+### 2. Example of `~/.config/pbs.conf`:
 
 ```ini
-# Token/API para autenticação no PBS
+# PBS authentication token
 PBS_APIKEY=mytoken@pbs!backup-script
 PBS_PASSWORD=mysupersecret
 
-# Host e datastore configurado no PBS
+# PBS server and datastore
 PBS_HOST=192.168.1.100
 PBS_DATASTORE=local
 
-# Lista de pastas (relativas ao $HOME) separadas por vírgula
+# Folders to back up (relative to $HOME, comma-separated)
 LOCAL_FOLDER="Documents,Pictures,Videos"
 ```
 
-> 🔐 **Segurança:** proteja esse arquivo com:
+> 🔒 **Security Tip:** protect this file:
 >
 > ```bash
 > chmod 600 ~/.config/pbs.conf
@@ -64,17 +64,17 @@ LOCAL_FOLDER="Documents,Pictures,Videos"
 
 ---
 
-## 🚀 Execução
+## 🚀 Usage
 
-1. Clone o repositório ou salve o script como `pbs_backup.sh`.
+1. Clone the repository or save the script as `pbs_backup.sh`.
 
-2. Dê permissão de execução:
+2. Make it executable:
 
    ```bash
    chmod +x pbs_backup.sh
    ```
 
-3. Execute:
+3. Run it:
 
    ```bash
    ./pbs_backup.sh
@@ -82,9 +82,9 @@ LOCAL_FOLDER="Documents,Pictures,Videos"
 
 ---
 
-## 🔍 O que o script faz
+## 🔍 What the Script Does
 
-### Gera um comando de backup como este:
+### It generates a command like:
 
 ```bash
 proxmox-backup-client backup \
@@ -94,60 +94,60 @@ proxmox-backup-client backup \
   --all-file-systems true
 ```
 
-### Onde:
+### Where:
 
-* `dico` = nome do usuário
-* `debian` = nome do host
-* `.pxar` = formato do arquivo de backup suportado pelo PBS
-
----
-
-## 📂 Estrutura de Nomeação
-
-* Os arquivos são nomeados como: `<usuário>-<pasta>.pxar`
-* O ID do backup (`--backup-id`) é: `<usuário>-<hostname>`
+* `dico` = username
+* `debian` = hostname
+* `.pxar` = archive format used by PBS
 
 ---
 
-## 📌 Logs e Validações
+## 📂 Naming Convention
 
-* Mostra quais pastas serão incluídas
-* Emite alertas para pastas ausentes ou inválidas
-* Exibe o comando final antes da execução
+* Each archive is named as: `<user>-<folder>.pxar`
+* The backup ID is: `<user>-<hostname>`
 
 ---
 
-## 🗓️ Agendamento com Cron (opcional)
+## 📋 Logging & Validation
 
-Para rodar automaticamente todos os dias às 23h:
+* Shows which folders are included in the backup
+* Warns about any invalid or missing folders
+* Displays the full command before running
+
+---
+
+## 📅 Cron Automation (optional)
+
+To schedule the script to run daily at 11 PM:
 
 ```bash
 crontab -e
 ```
 
-Adicione:
+Add this line:
 
 ```bash
-0 23 * * * /caminho/para/pbs_backup.sh >> $HOME/pbs_backup.log 2>&1
+0 23 * * * /path/to/pbs_backup.sh >> $HOME/pbs_backup.log 2>&1
 ```
 
 ---
 
-## ✅ Roadmap Futuro
+## ✅ Roadmap
 
-* Adicionar comentários automáticos via `snapshot notes update`
-* Enviar logs para Telegram ou WhatsApp com WAHA
-* Logging em `/var/log/`
+* Add auto-comments via `snapshot notes update`
+* Push logs to Telegram or WhatsApp using WAHA
+* Native logging to `/var/log/`
 
 ---
 
-## 📄 Licença
+## 📄 License
 
 [MIT](LICENSE)
 
 ---
 
-## 🤝 Contribuições
+## 🤝 Contributing
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests com melhorias, sugestões ou correções.
+Contributions are welcome! Feel free to open issues or pull requests for improvements, suggestions, or fixes.
 
